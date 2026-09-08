@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>Mercado do Mês</title>
+<meta name="theme-color" content="#123F30">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#EDF0E7; --paper-deep:#E2E7DB; --ink:#15303F; --ink-soft:#51697A;
+    --forest:#1F6F54; --forest-deep:#123F30; --forest-soft:#DCEAE3;
+    --brass:#B08D57; --brass-soft:#F1E7D3; --red:#B23A34; --red-soft:#F6E1DF;
+    --card:#FBFBF8; --line:#CBD3C6;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--paper); color:var(--ink); font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased;}
+  .mono{font-family:'IBM Plex Mono',monospace;}
+  .display{font-family:'Fraunces',serif;}
+  input, select, button, textarea{font-family:inherit; font-size:16px;}
+
+  .hidden{display:none !important;}
+
+  /* ---------- LOGIN ---------- */
+  #tela-login{
+    min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px;
+    background: linear-gradient(160deg, var(--forest-deep), var(--forest));
+  }
+  .login-card{
+    background:var(--card); border-radius:16px; padding:32px 28px; width:100%; max-width:380px;
+    box-shadow:0 20px 60px rgba(0,0,0,0.25);
+  }
+  .login-card h1{font-family:'Fraunces',serif; font-size:26px; margin:0 0 4px; color:var(--forest-deep);}
+  .login-card p{color:var(--ink-soft); font-size:13.5px; margin:0 0 22px;}
+  .field{margin-bottom:14px;}
+  .field label{display:block; font-size:11.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-soft); margin-bottom:5px;}
+  .field input, .field select{
+    width:100%; padding:11px 13px; border-radius:9px; border:1.5px solid var(--line); background:var(--paper);
+  }
+  .field input:focus, .field select:focus{outline:2px solid var(--forest); outline-offset:1px;}
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    background:var(--forest); color:#fff; border:none; border-radius:10px;
+    padding:13px 20px; font-weight:600; font-size:15px; cursor:pointer; width:100%;
+  }
+  .btn:active{transform:scale(0.98);}
+  .btn:disabled{opacity:.5; cursor:not-allowed;}
+  .btn.secondary{background:var(--paper-deep); color:var(--ink);}
+  .btn.danger{background:var(--red);}
+  .erro{background:var(--red-soft); color:#7A281F; padding:10px 12px; border-radius:8px; font-size:13px; margin-bottom:14px;}
+
+  /* ---------- APP ---------- */
+  #tela-app{max-width:640px; margin:0 auto; padding-bottom:90px;}
+  header.topo{
+    background:linear-gradient(160deg, var(--forest-deep), var(--forest)); color:#F4F6F1;
+    padding:20px 20px 26px; border-bottom:5px solid var(--brass);
+  }
+  header.topo .row{display:flex; justify-content:space-between; align-items:flex-start;}
+  header.topo .saudacao{font-size:12px; opacity:.8; text-transform:uppercase; letter-spacing:.06em;}
+  header.topo h1{font-family:'Fraunces',serif; font-size:22px; margin:2px 0 0;}
+  header.topo button.sair{background:none; border:1px solid rgba(255,255,255,.4); color:#fff; padding:6px 12px; border-radius:8px; font-size:12px;}
+
+  main{padding:18px;}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:18px; margin-bottom:16px;}
+  .card h2{font-family:'Fraunces',serif; font-size:17px; margin:0 0 12px; color:var(--forest-deep);}
+
+  .cta-lancar{
+    display:flex; align-items:center; gap:12px; background:var(--forest); color:#fff;
+    border:none; border-radius:14px; padding:18px; width:100%; font-size:16px; font-weight:600; cursor:pointer;
+    margin-bottom:16px;
+  }
+  .cta-lancar .icon{font-size:26px;}
+
+  .kpi-row{display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-bottom:6px;}
+  .kpi{background:var(--paper); border-radius:10px; padding:12px;}
+  .kpi .lbl{font-size:11px; color:var(--ink-soft); text-transform:uppercase; margin-bottom:4px;}
+  .kpi .val{font-family:'IBM Plex Mono',monospace; font-size:19px; font-weight:600; color:var(--forest-deep);}
+
+  .barra-cat{margin-bottom:9px;}
+  .barra-cat .top{display:flex; justify-content:space-between; font-size:12.5px; margin-bottom:3px;}
+  .barra-cat .track{background:var(--paper-deep); border-radius:6px; height:8px; overflow:hidden;}
+  .barra-cat .fill{background:var(--forest); height:100%; border-radius:6px;}
+
+  .compra-item{
+    display:flex; justify-content:space-between; align-items:center; padding:10px 0;
+    border-bottom:1px dashed var(--line); font-size:13.5px; cursor:pointer;
+  }
+  .compra-item:last-child{border-bottom:none;}
+  .compra-item .meta{color:var(--ink-soft); font-size:11.5px;}
+  .compra-item .valor{font-family:'IBM Plex Mono',monospace; font-weight:600;}
+
+  /* ---------- LANÇAMENTO ---------- */
+  #tela-lancar{position:fixed; inset:0; background:var(--paper); z-index:50; overflow-y:auto;}
+  .lancar-header{
+    display:flex; align-items:center; gap:12px; padding:16px 18px; background:var(--card);
+    border-bottom:1px solid var(--line); position:sticky; top:0; z-index:5;
+  }
+  .lancar-header button{background:none; border:none; font-size:22px; cursor:pointer; color:var(--ink);}
+  .lancar-header h2{font-family:'Fraunces',serif; font-size:18px; margin:0;}
+  .lancar-body{padding:18px;}
+
+  .upload-box{
+    border:2px dashed var(--brass); background:var(--brass-soft); border-radius:14px;
+    padding:26px 16px; text-align:center; cursor:pointer;
+  }
+  .upload-box .icon{font-size:34px; margin-bottom:8px;}
+  .thumbs{display:flex; gap:8px; flex-wrap:wrap; margin-top:12px;}
+  .thumbs img{width:64px; height:64px; object-fit:cover; border-radius:8px; border:1px solid var(--line);}
+
+  table.itens{width:100%; border-collapse:collapse; font-size:12.5px; margin-top:6px;}
+  table.itens th{
+    text-align:left; font-family:'IBM Plex Mono',monospace; font-size:9.5px; text-transform:uppercase;
+    color:var(--ink-soft); padding:6px 4px; border-bottom:1px solid var(--line);
+  }
+  table.itens td{padding:6px 4px; border-bottom:1px dashed var(--line); vertical-align:top;}
+  table.itens input, table.itens select{width:100%; padding:6px 6px; border-radius:6px; border:1px solid var(--line); font-size:12.5px;}
+  table.itens .rm{color:var(--red); background:none; border:none; cursor:pointer; font-size:15px;}
+
+  .total-itens{
+    display:flex; justify-content:space-between; align-items:center; padding:12px 0; font-weight:600;
+    border-top:2px solid var(--ink); margin-top:6px;
+  }
+
+  .loading-overlay{
+    position:fixed; inset:0; background:rgba(21,48,63,0.75); display:flex; align-items:center; justify-content:center;
+    flex-direction:column; color:#fff; z-index:100; gap:14px; text-align:center; padding:20px;
+  }
+  .spinner{width:40px; height:40px; border:4px solid rgba(255,255,255,.3); border-top-color:#fff; border-radius:50%; animation:spin 1s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  .toast{
+    position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:var(--forest-deep); color:#fff;
+    padding:12px 20px; border-radius:10px; font-size:13.5px; z-index:200; box-shadow:0 8px 24px rgba(0,0,0,.3);
+  }
+
+  .bottom-actions{
+    position:sticky; bottom:0; background:var(--card); border-top:1px solid var(--line);
+    padding:14px 18px; display:flex; gap:10px;
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ TELA DE LOGIN ============ -->
+<div id="tela-login">
+  <div class="login-card">
+    <h1>🧾 Mercado do Mês</h1>
+    <p>Entre com o login e senha que o administrador criou pra você.</p>
+    <div id="login-erro" class="erro hidden"></div>
+    <div class="field">
+      <label>E-mail</label>
+      <input type="email" id="login-email" autocomplete="username">
+    </div>
+    <div class="field">
+      <label>Senha</label>
+      <input type="password" id="login-senha" autocomplete="current-password">
+    </div>
+    <button class="btn" id="btn-login">Entrar</button>
+  </div>
+</div>
+
+<!-- ============ TELA PRINCIPAL ============ -->
+<div id="tela-app" class="hidden">
+  <header class="topo">
+    <div class="row">
+      <div>
+        <div class="saudacao">Olá,</div>
+        <h1 id="nome-membro">—</h1>
+      </div>
+      <button class="sair" id="btn-sair">Sair</button>
+    </div>
+  </header>
+
+  <main>
+    <button class="cta-lancar" id="btn-abrir-lancar">
+      <span class="icon">📸</span>
+      <span>Lançar Cupom Fiscal</span>
+    </button>
+
+    <div class="card">
+      <h2>Resumo de <span id="mes-atual-label">—</span></h2>
+      <div class="kpi-row">
+        <div class="kpi"><div class="lbl">Total gasto</div><div class="val" id="kpi-total">R$ 0</div></div>
+        <div class="kpi"><div class="lbl">Compras lançadas</div><div class="val" id="kpi-compras">0</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Por categoria</h2>
+      <div id="resumo-categorias">
+        <p style="color:var(--ink-soft); font-size:13px;">Nenhum lançamento neste mês ainda.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Quem mais comprou</h2>
+      <div id="resumo-membros">
+        <p style="color:var(--ink-soft); font-size:13px;">Nenhum lançamento neste mês ainda.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Últimos lançamentos</h2>
+      <div id="lista-compras">
+        <p style="color:var(--ink-soft); font-size:13px;">Nada por aqui ainda.</p>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ============ TELA DE LANÇAMENTO ============ -->
+<div id="tela-lancar" class="hidden">
+  <div class="lancar-header">
+    <button id="btn-fechar-lancar">✕</button>
+    <h2>Lançar Cupom</h2>
+  </div>
+  <div class="lancar-body">
+
+    <div id="passo-foto">
+      <div class="upload-box" id="upload-box">
+        <div class="icon">📷</div>
+        <div><b>Toque para tirar foto ou escolher da galeria</b></div>
+        <div style="font-size:12px; color:var(--ink-soft); margin-top:4px;">Cupom com mais de uma página? Envie várias fotos de uma vez.</div>
+      </div>
+      <input type="file" id="input-foto" accept="image/*" capture="environment" multiple class="hidden">
+      <div class="thumbs" id="thumbs"></div>
+      <button class="btn" id="btn-analisar" style="margin-top:16px;" disabled>Analisar com IA</button>
+    </div>
+
+    <div id="passo-confirmar" class="hidden">
+      <div class="field">
+        <label>Mercado</label>
+        <input type="text" id="conf-mercado">
+      </div>
+      <div class="field">
+        <label>Data da compra</label>
+        <input type="date" id="conf-data">
+      </div>
+
+      <table class="itens" id="tabela-itens">
+        <thead>
+          <tr><th style="width:26%">Produto</th><th style="width:20%">Categoria</th><th style="width:12%">Qtd</th><th style="width:10%">Un.</th><th style="width:14%">Vl. Unit.</th><th style="width:14%">Total</th><th></th></tr>
+        </thead>
+        <tbody id="corpo-itens"></tbody>
+      </table>
+      <button class="btn secondary" id="btn-add-item" style="margin-top:10px;">+ Adicionar item</button>
+
+      <div class="total-itens">
+        <span>Total da compra</span>
+        <span class="mono" id="total-calculado">R$ 0,00</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-actions hidden" id="acoes-confirmar">
+    <button class="btn secondary" id="btn-cancelar-confirmar">Cancelar</button>
+    <button class="btn" id="btn-salvar-compra">Salvar compra</button>
+  </div>
+</div>
+
+<div id="loading-overlay" class="loading-overlay hidden">
+  <div class="spinner"></div>
+  <div id="loading-texto">Processando...</div>
+</div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+// ============================================================
+// CONFIGURAÇÃO — preencha com os dados do SEU projeto Supabase
+// (painel do Supabase → Project Settings → API)
+// ============================================================
+const SUPABASE_URL = "https://rhjsgpwfabeojiarpyjv.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_f3XCirsJsZVB4CzYhUYU9A_Y3uh1Y-D";
+const EDGE_FUNCTION_URL = `${SUPABASE_URL}/functions/v1/extract-receipt`;
+// ============================================================
+
+const CATEGORIAS = ["Hortifruti", "Laticinios/Frios", "Carnes/Aves", "Mercearia",
+  "Limpeza", "Higiene Pessoal", "Papelaria", "Bebidas", "Outros"];
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let membroAtual = null;
+let imagensSelecionadas = []; // {base64, mimeType, previewUrl}
+let itensAtuais = [];
+let categoriasMemoria = {};
+
+const $ = (id) => document.getElementById(id);
+const fmt = (v) => (v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+function mostrarLoading(texto) {
+  $('loading-texto').textContent = texto;
+  $('loading-overlay').classList.remove('hidden');
+}
+function esconderLoading() { $('loading-overlay').classList.add('hidden'); }
+
+function toast(msg) {
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+
+// ------------------------------------------------------------
+// AUTENTICAÇÃO
+// ------------------------------------------------------------
+async function tentarLogin() {
+  const email = $('login-email').value.trim();
+  const senha = $('login-senha').value;
+  $('login-erro').classList.add('hidden');
+  if (!email || !senha) return;
+
+  $('btn-login').disabled = true;
+  const { error } = await supabase.auth.signInWithPassword({ email, password: senha });
+  $('btn-login').disabled = false;
+
+  if (error) {
+    $('login-erro').textContent = 'E-mail ou senha incorretos.';
+    $('login-erro').classList.remove('hidden');
+    return;
+  }
+  await carregarSessao();
+}
+
+async function carregarSessao() {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) { mostrarTelaLogin(); return; }
+
+  const { data: membro } = await supabase.from('membros').select('*').eq('auth_user_id', user.id).single();
+  if (!membro || !membro.ativo) {
+    await supabase.auth.signOut();
+    $('login-erro').textContent = 'Seu acesso está inativo. Fale com o administrador.';
+    $('login-erro').classList.remove('hidden');
+    mostrarTelaLogin();
+    return;
+  }
+  membroAtual = membro;
+  $('nome-membro').textContent = membro.nome;
+  mostrarTelaApp();
+  await carregarResumoMes();
+}
+
+function mostrarTelaLogin() {
+  $('tela-login').classList.remove('hidden');
+  $('tela-app').classList.add('hidden');
+}
+function mostrarTelaApp() {
+  $('tela-login').classList.add('hidden');
+  $('tela-app').classList.remove('hidden');
+}
+
+$('btn-login').addEventListener('click', tentarLogin);
+$('login-senha').addEventListener('keydown', (e) => { if (e.key === 'Enter') tentarLogin(); });
+$('btn-sair').addEventListener('click', async () => { await supabase.auth.signOut(); location.reload(); });
+
+// ------------------------------------------------------------
+// RESUMO DO MÊS
+// ------------------------------------------------------------
+async function carregarResumoMes() {
+  const agora = new Date();
+  const inicioMes = new Date(agora.getFullYear(), agora.getMonth(), 1).toISOString().slice(0, 10);
+  const fimMes = new Date(agora.getFullYear(), agora.getMonth() + 1, 0).toISOString().slice(0, 10);
+  const nomesMeses = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+  $('mes-atual-label').textContent = `${nomesMeses[agora.getMonth()]}/${agora.getFullYear()}`;
+
+  const { data: compras } = await supabase
+    .from('compras')
+    .select('*, membros(nome)')
+    .gte('data', inicioMes).lte('data', fimMes)
+    .order('data', { ascending: false });
+
+  const listaCompras = compras || [];
+  const total = listaCompras.reduce((s, c) => s + Number(c.valor_total || 0), 0);
+  $('kpi-total').textContent = fmt(total);
+  $('kpi-compras').textContent = listaCompras.length;
+
+  // por membro
+  const porMembro = {};
+  listaCompras.forEach(c => {
+    const nome = c.membros?.nome || 'Sem membro';
+    porMembro[nome] = (porMembro[nome] || 0) + Number(c.valor_total || 0);
+  });
+  renderBarras('resumo-membros', porMembro, total);
+
+  // lista recente
+  const listaEl = $('lista-compras');
+  if (listaCompras.length === 0) {
+    listaEl.innerHTML = '<p style="color:var(--ink-soft); font-size:13px;">Nada por aqui ainda.</p>';
+  } else {
+    listaEl.innerHTML = listaCompras.slice(0, 10).map(c => `
+      <div class="compra-item">
+        <div>
+          <div>${c.mercado || 'Mercado'}</div>
+          <div class="meta">${new Date(c.data + 'T00:00:00').toLocaleDateString('pt-BR')} · ${c.membros?.nome || ''}</div>
+        </div>
+        <div class="valor">${fmt(c.valor_total)}</div>
+      </div>
+    `).join('');
+  }
+
+  // por categoria — precisa dos itens
+  if (listaCompras.length > 0) {
+    const ids = listaCompras.map(c => c.id);
+    const { data: itens } = await supabase.from('itens_compra').select('categoria, valor_total').in('compra_id', ids);
+    const porCategoria = {};
+    (itens || []).forEach(i => {
+      porCategoria[i.categoria] = (porCategoria[i.categoria] || 0) + Number(i.valor_total || 0);
+    });
+    const totalItens = Object.values(porCategoria).reduce((a, b) => a + b, 0);
+    renderBarras('resumo-categorias', porCategoria, totalItens);
+  }
+}
+
+function renderBarras(elId, mapa, total) {
+  const el = $(elId);
+  const entradas = Object.entries(mapa).sort((a, b) => b[1] - a[1]);
+  if (entradas.length === 0) {
+    el.innerHTML = '<p style="color:var(--ink-soft); font-size:13px;">Nenhum lançamento neste mês ainda.</p>';
+    return;
+  }
+  el.innerHTML = entradas.map(([nome, valor]) => {
+    const pct = total > 0 ? Math.round((valor / total) * 100) : 0;
+    return `
+      <div class="barra-cat">
+        <div class="top"><span>${nome}</span><span class="mono">${fmt(valor)} (${pct}%)</span></div>
+        <div class="track"><div class="fill" style="width:${pct}%"></div></div>
+      </div>`;
+  }).join('');
+}
+
+// ------------------------------------------------------------
+// FLUXO DE LANÇAMENTO — foto → IA → confirmação → salvar
+// ------------------------------------------------------------
+$('btn-abrir-lancar').addEventListener('click', () => {
+  resetarLancamento();
+  $('tela-lancar').classList.remove('hidden');
+});
+$('btn-fechar-lancar').addEventListener('click', () => $('tela-lancar').classList.add('hidden'));
+$('btn-cancelar-confirmar').addEventListener('click', () => $('tela-lancar').classList.add('hidden'));
+
+function resetarLancamento() {
+  imagensSelecionadas = [];
+  itensAtuais = [];
+  $('thumbs').innerHTML = '';
+  $('input-foto').value = '';
+  $('btn-analisar').disabled = true;
+  $('passo-foto').classList.remove('hidden');
+  $('passo-confirmar').classList.add('hidden');
+  $('acoes-confirmar').classList.add('hidden');
+}
+
+$('upload-box').addEventListener('click', () => $('input-foto').click());
+
+$('input-foto').addEventListener('change', async (e) => {
+  const arquivos = Array.from(e.target.files || []);
+  for (const arquivo of arquivos) {
+    const base64 = await arquivoParaBase64(arquivo);
+    const previewUrl = URL.createObjectURL(arquivo);
+    imagensSelecionadas.push({ base64, mimeType: arquivo.type, previewUrl });
+  }
+  renderThumbs();
+  $('btn-analisar').disabled = imagensSelecionadas.length === 0;
+});
+
+function arquivoParaBase64(arquivo) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(',')[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(arquivo);
+  });
+}
+
+function renderThumbs() {
+  $('thumbs').innerHTML = imagensSelecionadas.map(img => `<img src="${img.previewUrl}">`).join('');
+}
+
+$('btn-analisar').addEventListener('click', async () => {
+  mostrarLoading('Lendo o cupom com IA...');
+  try {
+    // carrega a memória de categorias antes de mostrar a confirmação
+    const { data: memoria } = await supabase.from('categorias_aprendidas').select('produto, categoria');
+    categoriasMemoria = {};
+    (memoria || []).forEach(m => { categoriasMemoria[m.produto.toUpperCase()] = m.categoria; });
+
+    const resp = await fetch(EDGE_FUNCTION_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` },
+      body: JSON.stringify({ imagens: imagensSelecionadas.map(i => ({ base64: i.base64, mimeType: i.mimeType })) }),
+    });
+    const dados = await resp.json();
+    if (dados.erro) throw new Error(dados.erro);
+
+    $('conf-mercado').value = dados.mercado || '';
+    $('conf-data').value = dados.data || new Date().toISOString().slice(0, 10);
+    itensAtuais = (dados.itens || []).map(i => ({
+      produto: i.produto,
+      categoria: categoriasMemoria[i.produto.toUpperCase()] || i.categoria || 'Outros',
+      quantidade: i.quantidade || 1,
+      unidade: i.unidade || 'UND',
+      valor_unitario: i.valor_unitario || 0,
+      valor_total: i.valor_total || 0,
+    }));
+    renderTabelaItens();
+    $('passo-foto').classList.add('hidden');
+    $('passo-confirmar').classList.remove('hidden');
+    $('acoes-confirmar').classList.remove('hidden');
+  } catch (err) {
+    toast('Não consegui ler o cupom: ' + err.message);
+  } finally {
+    esconderLoading();
+  }
+});
+
+function renderTabelaItens() {
+  const corpo = $('corpo-itens');
+  corpo.innerHTML = itensAtuais.map((item, idx) => `
+    <tr data-idx="${idx}">
+      <td><input class="i-produto" value="${escapeHtml(item.produto)}"></td>
+      <td>
+        <select class="i-categoria">
+          ${CATEGORIAS.map(c => `<option value="${c}" ${c === item.categoria ? 'selected' : ''}>${c}</option>`).join('')}
+        </select>
+      </td>
+      <td><input class="i-qtd" type="number" step="0.001" value="${item.quantidade}"></td>
+      <td><input class="i-un" value="${item.unidade}"></td>
+      <td><input class="i-vu" type="number" step="0.01" value="${item.valor_unitario}"></td>
+      <td><input class="i-vt" type="number" step="0.01" value="${item.valor_total}" readonly style="background:var(--paper);"></td>
+      <td><button class="rm">✕</button></td>
+    </tr>
+  `).join('');
+  atualizarTotalGeral();
+
+  corpo.querySelectorAll('tr').forEach(tr => {
+    const idx = Number(tr.dataset.idx);
+    tr.querySelector('.i-produto').addEventListener('input', (e) => itensAtuais[idx].produto = e.target.value);
+    tr.querySelector('.i-categoria').addEventListener('change', (e) => itensAtuais[idx].categoria = e.target.value);
+    tr.querySelector('.i-un').addEventListener('input', (e) => itensAtuais[idx].unidade = e.target.value);
+    tr.querySelector('.i-qtd').addEventListener('input', (e) => recalcularItem(idx, tr));
+    tr.querySelector('.i-vu').addEventListener('input', (e) => recalcularItem(idx, tr));
+    tr.querySelector('.rm').addEventListener('click', () => {
+      itensAtuais.splice(idx, 1);
+      renderTabelaItens();
+    });
+  });
+}
+
+function recalcularItem(idx, tr) {
+  const qtd = Number(tr.querySelector('.i-qtd').value) || 0;
+  const vu = Number(tr.querySelector('.i-vu').value) || 0;
+  const vt = Math.round(qtd * vu * 100) / 100;
+  itensAtuais[idx].quantidade = qtd;
+  itensAtuais[idx].valor_unitario = vu;
+  itensAtuais[idx].valor_total = vt;
+  tr.querySelector('.i-vt').value = vt;
+  atualizarTotalGeral();
+}
+
+function atualizarTotalGeral() {
+  const total = itensAtuais.reduce((s, i) => s + Number(i.valor_total || 0), 0);
+  $('total-calculado').textContent = fmt(total);
+}
+
+function escapeHtml(s) {
+  return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+$('btn-add-item').addEventListener('click', () => {
+  itensAtuais.push({ produto: '', categoria: 'Outros', quantidade: 1, unidade: 'UND', valor_unitario: 0, valor_total: 0 });
+  renderTabelaItens();
+});
+
+$('btn-salvar-compra').addEventListener('click', async () => {
+  if (itensAtuais.length === 0) { toast('Adicione pelo menos um item.'); return; }
+  mostrarLoading('Salvando...');
+  try {
+    const total = itensAtuais.reduce((s, i) => s + Number(i.valor_total || 0), 0);
+    const { data: compra, error: erroCompra } = await supabase.from('compras').insert({
+      data: $('conf-data').value,
+      mercado: $('conf-mercado').value,
+      valor_total: total,
+      membro_id: membroAtual.id,
+    }).select().single();
+    if (erroCompra) throw erroCompra;
+
+    const linhasItens = itensAtuais.map(i => ({ ...i, compra_id: compra.id }));
+    const { error: erroItens } = await supabase.from('itens_compra').insert(linhasItens);
+    if (erroItens) throw erroItens;
+
+    // aprende/reforça a categoria de cada produto
+    for (const item of itensAtuais) {
+      await supabase.from('categorias_aprendidas').upsert({
+        produto: item.produto, categoria: item.categoria, atualizado_em: new Date().toISOString(),
+      });
+    }
+
+    toast('Compra salva! ✅');
+    $('tela-lancar').classList.add('hidden');
+    await carregarResumoMes();
+  } catch (err) {
+    toast('Erro ao salvar: ' + err.message);
+  } finally {
+    esconderLoading();
+  }
+});
+
+// ------------------------------------------------------------
+// INICIALIZAÇÃO
+// ------------------------------------------------------------
+carregarSessao();
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
+}
+</script>
+</body>
+</html>

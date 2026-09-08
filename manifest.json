@@ -1,0 +1,13 @@
+{
+  "name": "Mercado do Mês",
+  "short_name": "Mercado",
+  "description": "Controle de compras de supermercado da família",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#EDF0E7",
+  "theme_color": "#123F30",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
